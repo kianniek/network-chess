@@ -1,18 +1,10 @@
-﻿using Client.GameObjects.ChessPieces;
-using Microsoft.Xna.Framework;
-using System;
+﻿using Client.GameStates;
+using Networking.JsonObjects;
 using System.Collections.Generic;
-using System.Text;
-using static Client.GameObjects.ChessBoard;
+using static Client.GameStates.ChessBoard;
 
 namespace Client.GameObjects
 {
-    public enum PieceColor
-    {
-        White,
-        Black
-    }
-
     public enum PieceName
     { 
         King,
@@ -25,10 +17,10 @@ namespace Client.GameObjects
 
     public abstract class ChessPiece : SpriteGameObject
     {
-        protected PieceColor pieceColor;
+        protected ChessColor pieceColor;
         protected Cell cell;
 
-        public ChessPiece(Cell cell, PieceColor pieceColor, int sheetIndex) : base("spr_chess_pieces@6x2", sheetIndex: sheetIndex)
+        public ChessPiece(Cell cell, ChessColor pieceColor, int sheetIndex) : base("spr_chess_pieces@6x2", sheetIndex: sheetIndex)
         {
             this.pieceColor = pieceColor;
             Cell = cell;
@@ -38,7 +30,7 @@ namespace Client.GameObjects
             this.scale = 0.53125f;
         }
 
-        public PieceColor PieceColor
+        public ChessColor PieceColor
         {
             get => pieceColor;
         }

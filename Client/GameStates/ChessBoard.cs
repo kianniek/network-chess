@@ -1,10 +1,13 @@
-﻿using Client.GameObjects.ChessPieces;
+﻿using Client.GameObjects;
+using Client.GameObjects.ChessPieces;
+using Client.Networking;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Networking.JsonObjects;
 
-namespace Client.GameObjects
-{
-    public class ChessBoard : GameObjectList
+namespace Client.GameStates
+{  
+    public class ChessBoard : GameObjectList, IRequestListener
     {
         public struct Cell
         {
@@ -44,7 +47,7 @@ namespace Client.GameObjects
         private const int boardSize = 8;
         private const float cellSize = 106.25f;
 
-        private PieceColor currentPlayer = PieceColor.White;
+        private ChessColor currentPlayer = ChessColor.White;
         private readonly Cell NoSelectedCell = new Cell { Name = "No Cell" };
         private Cell selectedCell;
         private Cell[] possibleMoves;
@@ -56,6 +59,16 @@ namespace Client.GameObjects
         {
             Initialize();
             Reset();
+        }
+
+        public void InitializeRequestHandlers()
+        {
+            new JoinGameRequestHandler(this);
+        }
+
+        public void ColorSelected(ChessColor clientColor)
+        { 
+            //TODO: store which color the client plays with.
         }
 
         private void Initialize()
@@ -78,7 +91,7 @@ namespace Client.GameObjects
             CreateChessPieces();
         }
 
-        private bool IsKingCheck(Cell kingCell, PieceColor kingColor)
+        private bool IsKingCheck(Cell kingCell, ChessColor kingColor)
         {
             foreach (GameObject gameObject in Children)
             {
@@ -99,7 +112,7 @@ namespace Client.GameObjects
             return false;
         }
 
-        private void MoveChessPieceTo(Cell from, Cell to)
+        private bool MoveChessPieceTo(Cell from, Cell to)
         {
             ChessPiece tempFrom = cells[from.X, from.Y].ChessPiece;
             ChessPiece tempTo = cells[to.X, to.Y].ChessPiece;
@@ -128,24 +141,26 @@ namespace Client.GameObjects
                     Add(tempTo);
                 }
 
-                return;
+                return false;
             }
 
             CheckGameState(to);
 
             this.selectedCell = NoSelectedCell;
             possibleMoves = new Cell[0];
-            this.currentPlayer = currentPlayer == PieceColor.White ? PieceColor.Black : PieceColor.White;
+            this.currentPlayer = currentPlayer == ChessColor.White ? ChessColor.Black : ChessColor.White;
+
+            return true;
         }
 
         private void CheckGameState(Cell to)
         {
-            if (cells[to.X, to.Y].ChessPiece.PieceColor == PieceColor.Black)
+            if (cells[to.X, to.Y].ChessPiece.PieceColor == ChessColor.Black)
             {
                 if (cells[to.X, to.Y].ChessPiece is King)
                     blackKingLocation = cells[to.X, to.Y];
 
-                if (IsKingCheck(whiteKingLocation, PieceColor.White))
+                if (IsKingCheck(whiteKingLocation, ChessColor.White))
                 {
                     gameStateText.ShowCheckText("White Check!");
                 }
@@ -155,7 +170,7 @@ namespace Client.GameObjects
                 if (cells[to.X, to.Y].ChessPiece is King)
                     whiteKingLocation = cells[to.X, to.Y];
 
-                if (IsKingCheck(blackKingLocation, PieceColor.Black))
+                if (IsKingCheck(blackKingLocation, ChessColor.Black))
                 {
                     gameStateText.ShowCheckText("Black Check!");                   
                 }
@@ -168,16 +183,16 @@ namespace Client.GameObjects
             {
                 if (IsKingCheck(to, chessPiece.PieceColor))
                     return false;
-            } else if (currentPlayer == PieceColor.Black)
+            } else if (currentPlayer == ChessColor.Black)
             {
-                if (IsKingCheck(blackKingLocation, PieceColor.Black))
+                if (IsKingCheck(blackKingLocation, ChessColor.Black))
                 {
                     return false;
                 }
             }
             else
             {
-                if (IsKingCheck(whiteKingLocation, PieceColor.White))
+                if (IsKingCheck(whiteKingLocation, ChessColor.White))
                 {
                     return false;
                 }
@@ -283,45 +298,45 @@ namespace Client.GameObjects
         {
             for (int i = 0; i < 8; i++)
             {
-                AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[i, 1], PieceColor.Black, PieceName.Pawn));
-                AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[i, 6], PieceColor.White, PieceName.Pawn));
+                AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[i, 1], ChessColor.Black, PieceName.Pawn));
+                AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[i, 6], ChessColor.White, PieceName.Pawn));
             }
         }
 
         private void CreateRooks()
         {
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[0, 0], PieceColor.Black, PieceName.Rook));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[7, 0], PieceColor.Black, PieceName.Rook));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[0, 7], PieceColor.White, PieceName.Rook));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[7, 7], PieceColor.White, PieceName.Rook));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[0, 0], ChessColor.Black, PieceName.Rook));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[7, 0], ChessColor.Black, PieceName.Rook));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[0, 7], ChessColor.White, PieceName.Rook));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[7, 7], ChessColor.White, PieceName.Rook));
         }
 
         private void CreateKnights()
         {
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[1, 0], PieceColor.Black, PieceName.Knight));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[6, 0], PieceColor.Black, PieceName.Knight));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[1, 7], PieceColor.White, PieceName.Knight));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[6, 7], PieceColor.White, PieceName.Knight));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[1, 0], ChessColor.Black, PieceName.Knight));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[6, 0], ChessColor.Black, PieceName.Knight));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[1, 7], ChessColor.White, PieceName.Knight));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[6, 7], ChessColor.White, PieceName.Knight));
         }
 
         private void CreateBishops()
         {
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[2, 0], PieceColor.Black, PieceName.Bishop));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[5, 0], PieceColor.Black, PieceName.Bishop));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[2, 7], PieceColor.White, PieceName.Bishop));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[5, 7], PieceColor.White, PieceName.Bishop));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[2, 0], ChessColor.Black, PieceName.Bishop));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[5, 0], ChessColor.Black, PieceName.Bishop));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[2, 7], ChessColor.White, PieceName.Bishop));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[5, 7], ChessColor.White, PieceName.Bishop));
         }
 
         private void CreateKingAndQueen()
         {
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 0], PieceColor.Black, PieceName.King));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 0], ChessColor.Black, PieceName.King));
             blackKingLocation = cells[4, 0];
                         
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 7], PieceColor.White, PieceName.King));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 7], ChessColor.White, PieceName.King));
             whiteKingLocation = cells[4, 7];
 
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 0], PieceColor.Black, PieceName.Queen));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 7], PieceColor.White, PieceName.Queen));            
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 0], ChessColor.Black, PieceName.Queen));
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 7], ChessColor.White, PieceName.Queen));            
         }
     }
 }

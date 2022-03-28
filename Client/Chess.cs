@@ -1,22 +1,31 @@
-﻿using Client.GameObjects;
+﻿using Client.GameStates;
+using Client.Networking;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using Networking;
+using System.Threading.Tasks;
 
 namespace BaseProject
 {
     public class Chess : GameEnvironment
     {      
-        protected override void LoadContent()
+        protected async override void LoadContent()
         {
             base.LoadContent();
 
             screen = new Point(850, 850);
             ApplyResolutionSettings();
 
-            // TODO: use this.Content to load your game content here
-            GameStateManager.AddGameState("ChessBoard", new ChessBoard());
+            ChessBoard chessBoard = new ChessBoard();
+
+            //TODO: use this.Content to load your game content here            
+            GameStateManager.AddGameState("ChessBoard", chessBoard);
             GameStateManager.SwitchTo("ChessBoard");
+
+            TcpConnector tcpConnector = new TcpConnector();
+            //wait for the TCP connection to be established before initializing the requestListeners.
+            await Task.Run(() => tcpConnector.MakeTcpConnectionAsync(FetchAddress.RemoteAddress));
+
+            chessBoard.InitializeRequestHandlers();
         }
     }
 }

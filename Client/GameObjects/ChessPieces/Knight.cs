@@ -1,14 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using Client.GameStates;
+using Networking.JsonObjects;
 using System.Collections.Generic;
-using System.Text;
-using static Client.GameObjects.ChessBoard;
+using static Client.GameStates.ChessBoard;
 
 namespace Client.GameObjects.ChessPieces
 {
     public class Knight : ChessPiece
     {
-        public Knight(Cell cell, PieceColor pieceColor, int sheetIndex) : base(cell, pieceColor, sheetIndex)
+        public Knight(Cell cell, ChessColor pieceColor, int sheetIndex) : base(cell, pieceColor, sheetIndex)
         {
         }
 

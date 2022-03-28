@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using Client.GameStates;
+using Networking.JsonObjects;
 using System.Collections.Generic;
-using System.Text;
-using static Client.GameObjects.ChessBoard;
+using static Client.GameStates.ChessBoard;
 
 namespace Client.GameObjects.ChessPieces
 {
@@ -10,14 +9,14 @@ namespace Client.GameObjects.ChessPieces
     {
         private readonly int yDirection;        
 
-        public Pawn(Cell cell, PieceColor pieceColor, int sheetIndex) : base(cell, pieceColor, sheetIndex)
+        public Pawn(Cell cell, ChessColor pieceColor, int sheetIndex) : base(cell, pieceColor, sheetIndex)
         {
-            yDirection = pieceColor == PieceColor.White ? -1 : 1;            
+            yDirection = pieceColor == ChessColor.White ? -1 : 1;            
         }
 
         private bool IsAtStartLocation
         { 
-            get => pieceColor == PieceColor.White ? cell.Y == 6 : cell.Y == 1;
+            get => pieceColor == ChessColor.White ? cell.Y == 6 : cell.Y == 1;
         }
 
         public override Cell[] GetCheckMoves(ChessBoard chessBoard)

@@ -1,4 +1,6 @@
-﻿using static Client.GameObjects.ChessBoard;
+﻿using Client.GameStates;
+using Networking.JsonObjects;
+using static Client.GameStates.ChessBoard;
 
 namespace Client.GameObjects.ChessPieces
 {
@@ -20,7 +22,7 @@ namespace Client.GameObjects.ChessPieces
             BlackPawn
         }
 
-        public static ChessPiece CreateChessPiece(Cell cell, PieceColor color, PieceName pieceName)
+        public static ChessPiece CreateChessPiece(Cell cell, ChessColor color, PieceName pieceName)
         {
             int sheetIndex = (int)GetPieceSheetIndex(color, pieceName);            
             switch (pieceName)
@@ -41,23 +43,23 @@ namespace Client.GameObjects.ChessPieces
             }
         }
 
-        private static PieceSheetIndex GetPieceSheetIndex(PieceColor color, PieceName pieceName)
+        private static PieceSheetIndex GetPieceSheetIndex(ChessColor color, PieceName pieceName)
         {
             switch (pieceName)
             {
                 case PieceName.King:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackKing : PieceSheetIndex.WhiteKing;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackKing : PieceSheetIndex.WhiteKing;
                 case PieceName.Queen:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackQueen : PieceSheetIndex.WhiteQueen;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackQueen : PieceSheetIndex.WhiteQueen;
                 case PieceName.Bishop:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackBishop : PieceSheetIndex.WhiteBishop;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackBishop : PieceSheetIndex.WhiteBishop;
                 case PieceName.Knight:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackKnight : PieceSheetIndex.WhiteKnight;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackKnight : PieceSheetIndex.WhiteKnight;
                 case PieceName.Rook:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackRook : PieceSheetIndex.WhiteRook;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackRook : PieceSheetIndex.WhiteRook;
                 case PieceName.Pawn:
                 default:
-                    return color == PieceColor.Black ? PieceSheetIndex.BlackPawn : PieceSheetIndex.WhitePawn;
+                    return color == ChessColor.Black ? PieceSheetIndex.BlackPawn : PieceSheetIndex.WhitePawn;
             }
         }
     }
