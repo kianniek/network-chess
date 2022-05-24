@@ -18,7 +18,7 @@ namespace Networking.JsonObjects
         ChessMove           = 0b0000000000000100,
         StartGame           = 0b0000000000001000,
 
-        All                 = 0b0000000000000111
+        All                 = 0b0000000000001111
     }
 
     public enum ChessColor
@@ -74,6 +74,8 @@ namespace Networking.JsonObjects
                     return jObject.ToObject<JsonAssignColor>();
                 case JsonMessageType.StartGame:
                     return jObject.ToObject<JsonStartGame>();
+                case JsonMessageType.ChessMove:
+                    return jObject.ToObject<JsonChessMove>();
             }
             throw new Exception($"MessageType {jsonMessageType} not mapped.");
         }

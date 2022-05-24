@@ -48,6 +48,7 @@ namespace Client.GameStates
         private const float cellSize = 106.25f;
 
         private ChessColor currentPlayer = ChessColor.White;
+        private ChessColor ourColour;
         private readonly Cell NoSelectedCell = new Cell { Name = "No Cell" };
         private Cell selectedCell;
         private Cell[] possibleMoves;
@@ -64,11 +65,19 @@ namespace Client.GameStates
         public void InitializeRequestHandlers()
         {
             new JoinGameRequestHandler(this);
+            new MoveRequestHandeler(this);
         }
 
         public void ColorSelected(ChessColor clientColor)
-        { 
+        {
             //TODO: store which color the client plays with.
+            ourColour = clientColor;
+        }
+
+        public void UpdateChessBord(Cell from, Cell to)
+        {
+            //TODO: store which color the client plays with.
+            MoveChessPieceTo(from, to);
         }
 
         private void Initialize()

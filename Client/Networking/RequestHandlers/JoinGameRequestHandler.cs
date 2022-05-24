@@ -35,7 +35,7 @@ namespace Client.Networking
         {
             JsonAssignColor jsonAssignColor = jsonObject as JsonAssignColor;
             requestListener.ColorSelected(jsonAssignColor.ChessColor);
-            Console.WriteLine(jsonAssignColor.ChessColor);
+            //Console.WriteLine(jsonAssignColor.ChessColor);
         }
     }
 }
