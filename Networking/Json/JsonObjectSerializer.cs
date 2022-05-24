@@ -16,7 +16,8 @@ namespace Networking.JsonObjects
         PlayerJoined        = 0b0000000000000001,
         AssignPlayerColor   = 0b0000000000000010,        
         ChessMove           = 0b0000000000000100,
-        
+        StartGame           = 0b0000000000001000,
+
         All                 = 0b0000000000000111
     }
 
@@ -71,6 +72,8 @@ namespace Networking.JsonObjects
                     return jObject.ToObject<JsonRequestJoinGame>();
                 case JsonMessageType.AssignPlayerColor:
                     return jObject.ToObject<JsonAssignColor>();
+                case JsonMessageType.StartGame:
+                    return jObject.ToObject<JsonStartGame>();
             }
             throw new Exception($"MessageType {jsonMessageType} not mapped.");
         }

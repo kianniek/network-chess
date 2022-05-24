@@ -3,6 +3,7 @@ using Networking.Channels;
 using Networking.Json;
 using Networking.JsonObjects;
 using System.Diagnostics;
+using System;
 
 namespace Client.Networking
 {
@@ -34,6 +35,7 @@ namespace Client.Networking
         {
             JsonAssignColor jsonAssignColor = jsonObject as JsonAssignColor;
             requestListener.ColorSelected(jsonAssignColor.ChessColor);
+            Console.WriteLine(jsonAssignColor.ChessColor);
         }
     }
 }
