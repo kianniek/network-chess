@@ -4,9 +4,10 @@ using Client.Networking;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Networking.JsonObjects;
+using System;
 
 namespace Client.GameStates
-{  
+{
     public class ChessBoard : GameObjectList, IRequestListener
     {
         public struct Cell
@@ -14,8 +15,8 @@ namespace Client.GameStates
             private ChessPiece chessPiece;
 
             public Vector2 Position { get; set; }
-            public ChessPiece ChessPiece 
-            { 
+            public ChessPiece ChessPiece
+            {
                 get => chessPiece;
                 set
                 {
@@ -56,6 +57,8 @@ namespace Client.GameStates
         private Cell whiteKingLocation, blackKingLocation;
         private GameStateText gameStateText;
 
+        private bool gameStarted = false;
+
         public ChessBoard() : base()
         {
             Initialize();
@@ -66,6 +69,7 @@ namespace Client.GameStates
         {
             new JoinGameRequestHandler(this);
             new MoveRequestHandeler(this);
+            new StartGameRequestHandler(this);
         }
 
         public void ColorSelected(ChessColor clientColor)
@@ -76,8 +80,11 @@ namespace Client.GameStates
 
         public void UpdateChessBord(Cell from, Cell to)
         {
-            //TODO: store which color the client plays with.
             MoveChessPieceTo(from, to);
+        }
+        public void StartGame(bool gameStarted)
+        {
+            this.gameStarted = gameStarted;
         }
 
         private void Initialize()
@@ -181,7 +188,7 @@ namespace Client.GameStates
 
                 if (IsKingCheck(blackKingLocation, ChessColor.Black))
                 {
-                    gameStateText.ShowCheckText("Black Check!");                   
+                    gameStateText.ShowCheckText("Black Check!");
                 }
             }
         }
@@ -192,7 +199,8 @@ namespace Client.GameStates
             {
                 if (IsKingCheck(to, chessPiece.PieceColor))
                     return false;
-            } else if (currentPlayer == ChessColor.Black)
+            }
+            else if (currentPlayer == ChessColor.Black)
             {
                 if (IsKingCheck(blackKingLocation, ChessColor.Black))
                 {
@@ -213,28 +221,35 @@ namespace Client.GameStates
         {
             base.HandleInput(inputHelper);
 
-            if (inputHelper.MouseLeftButtonPressed())
+            Console.WriteLine(gameStarted);
+            if (gameStarted)
             {
-                Cell? currentSelectedCell = GetCellAt(inputHelper.MousePosition);
-
-                for (int i = 0; i < possibleMoves.Length; i++)
+                if (inputHelper.MouseLeftButtonPressed())
                 {
-                    Cell cell = possibleMoves[i];
-                                        
-                    if (cell == currentSelectedCell)
+                    Cell? currentSelectedCell = GetCellAt(inputHelper.MousePosition);
+
+                    for (int i = 0; i < possibleMoves.Length; i++)
                     {
-                        MoveChessPieceTo(this.selectedCell, cell);
-                        return;
+                        Cell cell = possibleMoves[i];
+
+                        if (cell == currentSelectedCell)
+                        {
+                            MoveChessPieceTo(this.selectedCell, cell);
+                            return;
+                        }
                     }
-                }
 
-                if (currentSelectedCell?.ChessPiece != null)
-                {
-                    Cell cell = currentSelectedCell.Value;
-                    if (cell.ChessPiece.PieceColor == currentPlayer)
+                    if (currentPlayer == ourColour)
                     {
-                        this.selectedCell = cell;
-                        this.possibleMoves = cell.ChessPiece.GetPossibleMoves(this);
+                        if (currentSelectedCell?.ChessPiece != null)
+                        {
+                            Cell cell = currentSelectedCell.Value;
+                            if (cell.ChessPiece.PieceColor == currentPlayer)
+                            {
+                                this.selectedCell = cell;
+                                this.possibleMoves = cell.ChessPiece.GetPossibleMoves(this);
+                            }
+                        }
                     }
                 }
             }
@@ -245,7 +260,7 @@ namespace Client.GameStates
             base.Draw(gameTime, spriteBatch);
 
             if (selectedCell != NoSelectedCell)
-            {                
+            {
                 foreach (Cell cell in possibleMoves)
                 {
                     DrawCell(spriteBatch, cell.Position - Vector2.One * cellSize / 2, Color.Green);
@@ -262,7 +277,7 @@ namespace Client.GameStates
         public Cell? GetCellAt(Vector2 position)
         {
             Vector2 mousePosition = Vector2.Floor(position / cellSize);
-           return GetCellAt((int)mousePosition.X, (int)mousePosition.Y);
+            return GetCellAt((int)mousePosition.X, (int)mousePosition.Y);
         }
 
         public Cell? GetCellAt(int x, int y)
@@ -300,7 +315,7 @@ namespace Client.GameStates
             base.Add(chesspiece);
 
             Vector2 position = Vector2.Floor(chesspiece.Position / cellSize);
-            cells[(int)position.X, (int)position.Y].ChessPiece = chesspiece;            
+            cells[(int)position.X, (int)position.Y].ChessPiece = chesspiece;
         }
 
         private void CreatePawns()
@@ -340,12 +355,12 @@ namespace Client.GameStates
         {
             AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 0], ChessColor.Black, PieceName.King));
             blackKingLocation = cells[4, 0];
-                        
+
             AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[4, 7], ChessColor.White, PieceName.King));
             whiteKingLocation = cells[4, 7];
 
             AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 0], ChessColor.Black, PieceName.Queen));
-            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 7], ChessColor.White, PieceName.Queen));            
+            AddChessPiece(ChessPieceFactory.CreateChessPiece(cells[3, 7], ChessColor.White, PieceName.Queen));
         }
     }
 }

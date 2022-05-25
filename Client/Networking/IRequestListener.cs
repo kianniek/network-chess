@@ -10,5 +10,7 @@ namespace Client.GameStates
     {
         void ColorSelected(ChessColor clientColor);
         void UpdateChessBord(Cell from, Cell to);
+
+        void StartGame(bool gameStarted);
     }
 }

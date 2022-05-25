@@ -27,6 +27,7 @@ namespace Server
 
             if (amountplayer == 1)
             {
+                Console.WriteLine("GameStarted = true");
                 await ChannelRequestDispatcher.Instance.SendMessageToAllAsync(new JsonStartGame { StartGame = true });
             }
             /**

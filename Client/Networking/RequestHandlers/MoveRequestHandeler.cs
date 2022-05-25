@@ -27,7 +27,7 @@ namespace Client.Networking
         private void OnChessMoveMessageReceived(JsonObject jsonObject)
         {
             JsonChessMove jsonChessMove = jsonObject as JsonChessMove;
-            requestListener.UpdateChessBord(jsonChessMove);
+            //requestListener.UpdateChessBord(jsonChessMove);
             //Console.WriteLine(jsonChessMove);
         }
     }
