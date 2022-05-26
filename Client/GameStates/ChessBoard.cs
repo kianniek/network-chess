@@ -77,7 +77,6 @@ namespace Client.GameStates
 
         public void ColorSelected(ChessColor clientColor)
         {
-            //TODO: store which color the client plays with.
             ourColour = clientColor;
         }
 
@@ -85,9 +84,7 @@ namespace Client.GameStates
         {
             Cell selecCell = (Cell)GetCellAt((int)XFrom, (int)YFrom);
             Cell moveCell = (Cell)GetCellAt((int)XTo, (int)YTo);
-            Console.WriteLine(selecCell.Name + " : " + moveCell.Name);
             MoveChessPieceTo(selecCell, moveCell);
-            //this.currentPlayer = currentPlayer;
         }
         public void StartGame(bool gameStarted)
         {
@@ -246,7 +243,6 @@ namespace Client.GameStates
                                 moveToCell = new System.Numerics.Vector2(cell.X, cell.Y),
                                 currentPlayer = currentPlayer
                             };
-                            Console.WriteLine(jsonPackage.selectedCell + " " + jsonPackage.moveToCell + " " + jsonPackage.currentPlayer + " Message from before sending");
                             move.DoChessMove(jsonPackage);
 
                             MoveChessPieceTo(this.selectedCell, cell);

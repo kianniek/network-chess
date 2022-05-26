@@ -21,7 +21,6 @@ namespace Client.Networking
         {
             JsonStartGame jsonStartGame = jsonObject as JsonStartGame;
             requestListener.StartGame(jsonStartGame.StartGame);
-            Console.WriteLine(jsonStartGame.StartGame);
         }
     }
 }

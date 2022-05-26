@@ -25,7 +25,6 @@ namespace Client.Networking
         private void OnChessMoveMessageReceived(JsonObject jsonObject)
         {
             JsonChessMove jsonChessMove = jsonObject as JsonChessMove;
-            Console.WriteLine(jsonChessMove.selectedCell.X+","+ jsonChessMove.selectedCell.Y + " : " + jsonChessMove.moveToCell.X + "," + jsonChessMove.moveToCell.Y + " \n" + jsonChessMove.currentPlayer);
             requestListener.UpdateChessBord(jsonChessMove.selectedCell.X, jsonChessMove.selectedCell.Y, jsonChessMove.moveToCell.X, jsonChessMove.moveToCell.Y, jsonChessMove.currentPlayer);
         }
     }
