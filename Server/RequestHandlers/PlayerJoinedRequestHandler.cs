@@ -27,8 +27,8 @@ namespace Server
 
             if (amountplayer == 1)
             {
-                Console.WriteLine("GameStarted = true");
                 await ChannelRequestDispatcher.Instance.SendMessageToAllAsync(new JsonStartGame { StartGame = true });
+                Console.WriteLine("A new challenger approaches!");
             }
             /**
              * Wanneer de Chess client wordt opgestart, wordt er direct een verzoek naar de server gestuurd om mee te mogen doen met het spel.
@@ -37,7 +37,6 @@ namespace Server
              * Stap 2: Wanneer er twee spelers zijn verbonden, stuur een berichtje naar alle clients dat het spel gaat beginnen. Je kan spieken spieken bij de code van JsonAssigColor.
              */
             amountplayer++;
-            Console.WriteLine("A new challenger approaches!");
         }
     }
 }

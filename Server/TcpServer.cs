@@ -1,4 +1,5 @@
 ﻿using Networking.Channels;
+using Server.RequestHandlers;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -15,6 +16,7 @@ namespace Server
             socket.Listen(128);
 
             new PlayerJoinedRequestHandler();
+            new ForwardMessageRequestHandler();
 
             Task.Run(() => ListenForIncomingTcpConnectionRequestsAsync(socket));
         }

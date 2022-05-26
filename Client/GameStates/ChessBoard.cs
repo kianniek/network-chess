@@ -3,6 +3,7 @@ using Client.GameObjects.ChessPieces;
 using Client.Networking;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Networking.Json;
 using Networking.JsonObjects;
 using System;
 
@@ -59,6 +60,8 @@ namespace Client.GameStates
 
         private bool gameStarted = false;
 
+        MoveRequestHandler move;
+
         public ChessBoard() : base()
         {
             Initialize();
@@ -68,8 +71,8 @@ namespace Client.GameStates
         public void InitializeRequestHandlers()
         {
             new JoinGameRequestHandler(this);
-            new MoveRequestHandeler(this);
             new StartGameRequestHandler(this);
+            move = new MoveRequestHandler(this);
         }
 
         public void ColorSelected(ChessColor clientColor)
@@ -78,9 +81,13 @@ namespace Client.GameStates
             ourColour = clientColor;
         }
 
-        public void UpdateChessBord(Cell from, Cell to)
+        public void UpdateChessBord(float XFrom, float YFrom, float XTo, float YTo, ChessColor currentPlayer)
         {
-            MoveChessPieceTo(from, to);
+            Cell selecCell = (Cell)GetCellAt((int)XFrom, (int)YFrom);
+            Cell moveCell = (Cell)GetCellAt((int)XTo, (int)YTo);
+            Console.WriteLine(selecCell.Name + " : " + moveCell.Name);
+            MoveChessPieceTo(selecCell, moveCell);
+            //this.currentPlayer = currentPlayer;
         }
         public void StartGame(bool gameStarted)
         {
@@ -220,8 +227,6 @@ namespace Client.GameStates
         public override void HandleInput(InputHelper inputHelper)
         {
             base.HandleInput(inputHelper);
-
-            Console.WriteLine(gameStarted);
             if (gameStarted)
             {
                 if (inputHelper.MouseLeftButtonPressed())
@@ -234,7 +239,20 @@ namespace Client.GameStates
 
                         if (cell == currentSelectedCell)
                         {
+                            //Update Json File And sent to Server
+                            JsonChessMove jsonPackage = new JsonChessMove
+                            {
+                                selectedCell = new System.Numerics.Vector2(this.selectedCell.X, this.selectedCell.Y),
+                                moveToCell = new System.Numerics.Vector2(cell.X, cell.Y),
+                                currentPlayer = currentPlayer
+                            };
+                            Console.WriteLine(jsonPackage.selectedCell + " " + jsonPackage.moveToCell + " " + jsonPackage.currentPlayer + " Message from before sending");
+                            move.DoChessMove(jsonPackage);
+
                             MoveChessPieceTo(this.selectedCell, cell);
+
+                            
+
                             return;
                         }
                     }
